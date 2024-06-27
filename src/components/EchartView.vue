@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watchEffect, shallowRef } from 'vue';
 import { useBarChart } from './UseBarChart';
 import { useEChart } from './UseEchart';
 import { useBarChartOption, useBarChartOptionRefresh } from './UseOption';
@@ -67,6 +67,10 @@ onMounted(() => {
   if (barDivRef_01.value) {
     barChart_01 = eCharts.init(barDivRef_01.value);
     barChart_01.setOption(makeOption());
+
+    barChart_01.on('click', function (params) {
+      console.log(params);
+    });
   }
 
   if (barDivRef_02.value) {
@@ -74,6 +78,18 @@ onMounted(() => {
     barChart_02.setOption(ativeOption.value);
   }
 });
+
+// Test Shallow & getter reative
+const testRef = ref({ name: '', age: 0 });
+const testShallow = shallowRef({ name: '', age: 0 });
+let count = () => 0 + testRef.value.age;
+
+function handleChangeShallow(name, age) {
+  testRef.value.name = name;
+  testRef.value.age = age;
+
+  testShallow.value = { name, age };
+}
 </script>
 
 <template>
@@ -95,5 +111,15 @@ onMounted(() => {
     <br />
     <div ref="barDivRef_02" style="width: 600px; height: 400px">test</div>
     <br />
+
+    <button @click="handleChangeShallow('yun', 42)">Change</button>
+    <h1>Ref</h1>
+    {{ testRef }}
+
+    <h1>shallowRef</h1>
+    {{ testShallow }}
+
+    <h1>Count</h1>
+    {{ count() }}
   </div>
 </template>
