@@ -2,16 +2,16 @@
 import { ref, onMounted, watchEffect, shallowRef } from 'vue';
 import { useBarChart } from './UseBarChart';
 import { useEChart } from './UseEchart';
-import { useBarChartOption, useBarChartOptionRefresh } from './UseOption';
-
-const eCharts = useEChart();
-const ativeOption = useBarChartOption();
+import { useBarChartOption } from './UseOption';
 
 const barDivRef_01 = ref(null);
 const barDivRef_02 = ref(null);
 
 let barChart_01;
 let barChart_02;
+
+const eCharts = useEChart();
+const [ativeOption, setRefreshOption] = useBarChartOption();
 
 const makeOption = () => {
   let option = {
@@ -54,7 +54,7 @@ function handleChange02() {
 }
 
 function handleRefresh02() {
-  useBarChartOptionRefresh();
+  setRefreshOption();
 }
 
 watchEffect(() => {
