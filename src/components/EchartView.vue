@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect, shallowRef } from 'vue';
+import { ref, onMounted, watchEffect, shallowRef, nextTick } from 'vue';
 import { useBarChart } from './UseBarChart';
 import { useEChart } from './UseEchart';
 import { useBarChartOption } from './UseOption';
@@ -12,6 +12,8 @@ let barChart_02;
 
 const eCharts = useEChart();
 const [ativeOption, setRefreshOption] = useBarChartOption();
+
+const isVisible = ref(true);
 
 const makeOption = () => {
   let option = {
@@ -49,12 +51,40 @@ function handleRefresh() {
   barChart_01.setOption(initialOption);
 }
 
+async function handleOnOff() {
+  isVisible.value = !isVisible.value;
+
+  await nextTick();
+  if (isVisible.value) {
+    iniBarChart01();
+  } else {
+    barChart_01.dispose();
+  }
+}
+
 function handleChange02() {
   ativeOption.value.series[0].data[5] = 200;
 }
 
 function handleRefresh02() {
   setRefreshOption();
+}
+
+function iniBarChart01() {
+  if (barDivRef_01.value) {
+    barChart_01 = eCharts.init(barDivRef_01.value);
+    barChart_01.setOption(makeOption());
+
+    barChart_01.on('click', function (params) {
+      console.log(params);
+    });
+
+    barChart_01.getZr().on('click', function (event) {
+      if (!event.target) {
+        console.log('点击在了空白处');
+      }
+    });
+  }
 }
 
 watchEffect(() => {
@@ -64,14 +94,7 @@ watchEffect(() => {
 });
 
 onMounted(() => {
-  if (barDivRef_01.value) {
-    barChart_01 = eCharts.init(barDivRef_01.value);
-    barChart_01.setOption(makeOption());
-
-    barChart_01.on('click', function (params) {
-      console.log(params);
-    });
-  }
+  iniBarChart01();
 
   if (barDivRef_02.value) {
     barChart_02 = eCharts.init(barDivRef_02.value);
@@ -99,8 +122,16 @@ function handleChangeShallow(name, age) {
     <button @click="handleChange">Change Ver.1</button>
     <span>{{ ' ' }}</span>
     <button @click="handleRefresh">Refresh Ver.1</button>
+    <span>{{ ' ' }}</span>
+    <button @click="handleOnOff">Show/Hid</button>
     <br />
-    <div ref="barDivRef_01" style="width: 600px; height: 400px">test</div>
+    <div
+      v-if="isVisible"
+      ref="barDivRef_01"
+      style="width: 600px; height: 400px"
+    >
+      test
+    </div>
 
     <br />
 
