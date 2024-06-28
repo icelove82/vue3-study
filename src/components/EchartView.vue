@@ -11,7 +11,7 @@ let barChart_01;
 let barChart_02;
 
 const eCharts = useEChart();
-const [ativeOption, setRefreshOption] = useBarChartOption();
+const [ativeOption, resetActiveOption] = useBarChartOption();
 
 const isVisible = ref(true);
 
@@ -67,7 +67,7 @@ function handleChange02() {
 }
 
 function handleRefresh02() {
-  setRefreshOption();
+  resetActiveOption();
 }
 
 function iniBarChart01() {
@@ -145,12 +145,12 @@ function handleChangeShallow(name, age) {
 
     <button @click="handleChangeShallow('yun', 42)">Change</button>
     <h1>Ref</h1>
-    {{ testRef }}
+    <span>{{ testRef }}</span>
 
     <h1>shallowRef</h1>
-    {{ testShallow }}
+    <span>{{ testShallow }}</span>
 
     <h1>Count</h1>
-    {{ count() }}
+    <span>{{ count() }}</span>
   </div>
 </template>
