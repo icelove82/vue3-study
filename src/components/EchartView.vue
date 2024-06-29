@@ -4,6 +4,8 @@ import { useBarChart } from './UseBarChart';
 import { useEChart } from './UseEchart';
 import { useBarChartOption } from './UseOption';
 
+const { person, country } = defineProps(['person', 'country']);
+
 const barDivRef_01 = ref(null);
 const barDivRef_02 = ref(null);
 
@@ -117,6 +119,9 @@ function handleChangeShallow(name, age) {
 
 <template>
   <div>
+    <span>Person : {{ person }}</span> {{ ' -- ' }}
+    <span>Counrty : {{ country }}</span>
+
     <h1>EChart View Ver.1</h1>
     <br />
     <button @click="handleChange">Change Ver.1</button>

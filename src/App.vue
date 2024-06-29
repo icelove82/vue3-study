@@ -2,6 +2,10 @@
 import HelloWorld from './components/HelloWorld.vue';
 import TheWelcome from './components/TheWelcome.vue';
 import EChartView from './components/EchartView.vue';
+import { ref } from 'vue';
+
+const person = 'YUN';
+const country = 'KOR';
 </script>
 
 <template>
@@ -20,7 +24,7 @@ import EChartView from './components/EchartView.vue';
   </header>
 
   <main>
-    <EChartView />
+    <EChartView :person="person" :country="country" />
   </main>
 </template>
 
