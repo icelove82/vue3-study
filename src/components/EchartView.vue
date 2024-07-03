@@ -4,6 +4,9 @@ import { useBarChart } from './UseBarChart';
 import { useEChart } from './UseEchart';
 import { useBarChartOption } from './UseOption';
 
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+
 const { person, country } = defineProps(['person', 'country']);
 
 const barDivRef_01 = ref(null);
@@ -115,12 +118,94 @@ function handleChangeShallow(name, age) {
 
   testShallow.value = { name, age };
 }
+
+// Test excel download
+function excelDownload() {
+  generateExcel(
+    [
+      {
+        values: ['', 'Header1', '', 'Header2', ''],
+        ranges: ['', 'B1:C1', 'D1:E1'],
+      },
+      {
+        values: ['', 'Subheader1', 'Subheader2', 'Subheader3', 'Subheader4'],
+      },
+    ],
+    [
+      ['Category1', 'Data1', 'Data2', 'Data3', 'Data4'],
+      ['Category2', 'Data1', 'Data2', 'Data3', 'Data4'],
+    ],
+    'Multi-Level Headers.xlsx'
+  );
+}
+async function generateExcel(headerRows, data, fileName = 'Excel Report.xlsx') {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('My Sheet');
+
+  // Add header rows to the worksheet
+  headerRows.forEach((row) => {
+    const headerRow = worksheet.addRow(row.values);
+    headerRow.height = 20; // set row height
+
+    // Apply styles to the header row
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF808080' }, // gray color
+      };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+      cell.font = { bold: true };
+    });
+
+    // Merge cells if ranges are provided
+    if (row.ranges) {
+      row.ranges.forEach((range) => {
+        worksheet.mergeCells(range);
+      });
+    }
+  });
+
+  // Add data rows to the worksheet
+  data.forEach((row) => {
+    worksheet.addRow(row);
+  });
+
+  // Style column 'A'
+  worksheet
+    .getColumn(1)
+    .eachCell({ includeEmpty: false }, (cell, rowNumber) => {
+      // Skip the header rows
+      if (rowNumber > headerRows.length) {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFFF00' }, // yellow color
+        };
+      }
+    });
+
+  // Generate a buffer
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  // Use file-saver to trigger download
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  saveAs(blob, fileName);
+}
 </script>
 
 <template>
   <div>
     <span>Person : {{ person }}</span> {{ ' -- ' }}
-    <span>Counrty : {{ country }}</span>
+    <span>Counrty : {{ country }}</span> {{ ' -- ' }}
+    <button @click="excelDownload">Excel Download With Style</button>
 
     <h1>EChart View Ver.1</h1>
     <br />

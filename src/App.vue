@@ -6,6 +6,53 @@ import { ref } from 'vue';
 
 const person = 'YUN';
 const country = 'KOR';
+
+function excelDownload() {
+  var data = [
+    { name: 'John', city: 'Seattle' },
+    { name: 'Mike', city: 'Los Angeles' },
+    { name: 'Zane', city: 'New York' },
+  ];
+
+  // process the data into suitable format
+  var ws_data = data.map((obj) => Object.values(obj));
+
+  ws_data.unshift(Object.keys(data[0])); // add header row
+
+  // create a worksheet
+  var ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+  // create a new blank workbook, and add the worksheet to it
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+  // generate XLSX file and send to client
+  XLSX.writeFile(wb, 'Data.xlsx');
+}
+
+function excelDownload2() {
+  var data = [
+    ['', 'Group1', '', 'Group2', ''],
+    ['', 'Header1', 'Header2', 'Header3', 'Header4'],
+    ['Row1', 'Data11', 'Data12', 'Data13', 'Data14'],
+    ['Row2', 'Data21', 'Data22', 'Data23', 'Data24'],
+  ];
+
+  // process the data into suitable format
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.aoa_to_sheet(data);
+
+  // IMPORTANT: This is how you add a merge to your sheet
+  ws['!merges'] = [
+    // Merge cell A1:B1 (Merge 'Group1' Header)
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 2 } },
+    // Merge cell C1:D1 (Merge 'Group2' Header)
+    { s: { r: 0, c: 3 }, e: { r: 0, c: 4 } },
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  XLSX.writeFile(wb, 'MultiLevelHeaders.xlsx');
+}
 </script>
 
 <template>
@@ -19,6 +66,7 @@ const country = 'KOR';
     />
 
     <div class="wrapper">
+      <button @click="excelDownload2">Excel Download</button>
       <HelloWorld msg="You did it!" />
     </div>
   </header>
