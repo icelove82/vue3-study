@@ -11,9 +11,11 @@ const { person, country } = defineProps(['person', 'country']);
 
 const barDivRef_01 = ref(null);
 const barDivRef_02 = ref(null);
+const treemapDivRef_03 = ref(null);
 
 let barChart_01;
 let barChart_02;
+let treemapChart_03;
 
 const eCharts = useEChart();
 const [ativeOption, resetActiveOption] = useBarChartOption();
@@ -38,6 +40,38 @@ const makeOption = () => {
         name: '销量',
         type: 'bar',
         data: [5, 20, 36, 10, 10, 20],
+      },
+    ],
+  };
+
+  return option;
+};
+
+const treemapOption = () => {
+  let option = {
+    series: [
+      {
+        type: 'treemap',
+        data: [
+          {
+            name: 'Node A',
+            value: 10,
+            children: [
+              {
+                name: 'Node A1',
+                value: 4,
+              },
+              {
+                name: 'Node A2',
+                value: 6,
+              },
+            ],
+          },
+          {
+            name: 'Node B',
+            value: 20,
+          },
+        ],
       },
     ],
   };
@@ -104,6 +138,11 @@ onMounted(() => {
   if (barDivRef_02.value) {
     barChart_02 = eCharts.init(barDivRef_02.value);
     barChart_02.setOption(ativeOption.value);
+  }
+
+  if (treemapDivRef_03.value) {
+    treemapChart_03 = eCharts.init(treemapDivRef_03.value);
+    treemapChart_03.setOption(treemapOption());
   }
 });
 
@@ -230,7 +269,7 @@ async function generateExcel(headerRows, data, fileName = 'Excel Report.xlsx') {
     <span>{{ ' ' }}</span>
     <button @click="handleRefresh02">Refresh Ver.2</button>
     <br />
-    <div ref="barDivRef_02" style="width: 600px; height: 400px">test</div>
+    <div ref="barDivRef_02" style="width: 600px; height: 400px"></div>
     <br />
 
     <button @click="handleChangeShallow('yun', 42)">Change</button>
@@ -242,5 +281,10 @@ async function generateExcel(headerRows, data, fileName = 'Excel Report.xlsx') {
 
     <h1>Count</h1>
     <span>{{ count() }}</span>
+
+    <h1>EChart View Ver.3 TreeMap</h1>
+    <br />
+    <div ref="treemapDivRef_03" style="width: 600px; height: 400px"></div>
+    <br />
   </div>
 </template>
